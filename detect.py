@@ -4,10 +4,16 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 import pickle
+from sort import Sort
 
 #Outlier Detection System
-with open("outlier_model", 'rb') as pickle_file:
+with open("./models/svm_model", 'rb') as pickle_file:
     clf = pickle.load(pickle_file)
+
+'''
+mot_tracker = Sort()
+trackers = mot_tracker.update(dets)
+'''
 
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
@@ -21,14 +27,6 @@ Aditya_face_encoding = face_recognition.face_encodings(Aditya_image)[0]
 Carrisa_image = face_recognition.load_image_file("images/Carrisa.jpg")
 Carrisa_face_encoding = face_recognition.face_encodings(Carrisa_image)[0]
 
-# Load a third sample picture and learn how to recognize it.
-Esti_image = face_recognition.load_image_file("images/Esti.jpg")
-Esti_face_encoding = face_recognition.face_encodings(Esti_image)[0]
-
-# Load a fourth sample picture and learn how to recognize it.
-Will_image = face_recognition.load_image_file("images/Will.jpg")
-Will_face_encoding = face_recognition.face_encodings(Will_image)[0]
-
 # Load a fourth sample picture and learn how to recognize it.
 Madeline_image = face_recognition.load_image_file("images/Madeline.jpg")
 Madeline_face_encoding = face_recognition.face_encodings(Madeline_image)[0]
@@ -37,23 +35,24 @@ Madeline_face_encoding = face_recognition.face_encodings(Madeline_image)[0]
 Joshua_image = face_recognition.load_image_file("images/Joshua.jpg")
 Joshua_face_encoding = face_recognition.face_encodings(Joshua_image)[0]
 
+# Load a fourth sample picture and learn how to recognize it.
+Will_image= face_recognition.load_image_file("images/Will.jpg")
+Will_face_encoding = face_recognition.face_encodings(Will_image)[0]
 
 # Create arrays of known face encodings and their names
 known_face_encodings = [
     Aditya_face_encoding,
     Carrisa_face_encoding,
-    Esti_face_encoding,
-    Will_face_encoding,
     Joshua_face_encoding,
-    Madeline_face_encoding
+    Madeline_face_encoding,
+    Will_face_encoding
 ]
 known_face_names = [
     "Aditya",
     "Carrisa",
-    "Esti",
-    "Will",
     "Joshua",
-    "Madeline"
+    "Madeline",
+    "William"
 ]
 
 # Initialize some variables
@@ -82,18 +81,12 @@ while True:
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = "Unknown"
+            name = "Unknown2"
 
-            # # If a match was found in known_face_encodings, just use the first one.
-            # if True in matches:
-            #     first_match_index = matches.index(True)
-            #     name = known_face_names[first_match_index]
-
-            # Or instead, use the known face with the smallest distance to the new face
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if (clf.predict([face_encoding]) == -1):
-                name = "Unknown"
+                name = "Unknown1"
             elif matches[best_match_index]:
                 name = known_face_names[best_match_index]
 
